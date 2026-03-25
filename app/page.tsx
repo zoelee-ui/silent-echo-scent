@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Download, RotateCcw, Menu, X, Compass, Flower2, User, ChevronRight, ArrowLeft, Layers, Microscope } from 'lucide-react';
 
-// 1. 完整 6 款市售香水資料庫（包含 VIP 隱藏資訊）
+// 1. 完整 6 款市售香水資料庫
 const PERFUME_MATCHES: { [key: string]: any } = {
   CALM: { 
     brand: "LE LABO", title: "Santal 33", 
@@ -62,7 +62,7 @@ export default function Home() {
   const [navOpen, setNavOpen] = useState(false);
   const [storyOpen, setStoryOpen] = useState(false);
   const [vipOpen, setVipOpen] = useState(false);
-  const [vipStage, setVipStage] = useState('mission'); // 🟢 新增：mission | input 狀態切換
+  const [vipStage, setVipStage] = useState('mission');
   const [vipCode, setVipCode] = useState('');
   const [sentiment, setSentiment] = useState({ CALM: 0, WILD: 0, ETHERIAL: 0, LUNAR: 0, DARK: 0, MYSTIC: 0 });
   const [progress, setProgress] = useState(0);
@@ -98,7 +98,6 @@ export default function Home() {
 
   const handleVipSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // 🟢 更改為更具象的序號，呼應 IG 分享任務
     if (vipCode.toUpperCase() === 'ECHO-IG-2026') {
       setNavOpen(false);
       setVipOpen(false);
@@ -106,7 +105,7 @@ export default function Home() {
       setTimeout(() => { setStep('vip_dashboard'); setIsVisible(true); }, 800);
     } else {
       setVipCode('');
-      alert("序號無效，請確保已完成 IG 分享任務並領取正確 Access Code。");
+      alert("序號無效，請確保已完成 IG 分享任務。");
     }
   };
 
@@ -179,33 +178,25 @@ export default function Home() {
       {/* 導航選單 */}
       <div className={`fixed inset-0 z-[105] bg-[#FDFDFD]/95 backdrop-blur-xl transition-all duration-700 ease-in-out ${navOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
         <div className="h-full flex flex-col items-center justify-center gap-12">
-          <button onClick={() => { setStoryOpen(true); setNavOpen(false); }} className="group flex items-center gap-4 text-[10px] tracking-[0.5em] opacity-40 hover:opacity-100 transition-all uppercase">
+          <button onClick={() => { setStoryOpen(true); setNavOpen(false); }} className="group flex items-center gap-4 text-[10px] tracking-[0.5em] opacity-40 hover:opacity-100 transition-all uppercase pl-[0.5em]">
             <Compass size={16} className="group-hover:rotate-12 transition-transform" /> BRAND STORY
           </button>
-          <button onClick={() => { setNavOpen(false); window.location.reload(); }} className="group flex items-center gap-4 text-[10px] tracking-[0.5em] opacity-40 hover:opacity-100 transition-all uppercase">
+          <button onClick={() => { setNavOpen(false); window.location.reload(); }} className="group flex items-center gap-4 text-[10px] tracking-[0.5em] opacity-40 hover:opacity-100 transition-all uppercase pl-[0.5em]">
             <Flower2 size={16} className="group-hover:rotate-12 transition-transform" /> SCENT TEST
           </button>
-
-          {/* 🟢 VIP Portal 互動區域邏輯更新 */}
           {!vipOpen ? (
-            <button onClick={() => { setVipOpen(true); setVipStage('mission'); }} className="group flex items-center gap-4 text-[10px] tracking-[0.5em] opacity-40 hover:opacity-100 transition-all uppercase">
+            <button onClick={() => { setVipOpen(true); setVipStage('mission'); }} className="group flex items-center gap-4 text-[10px] tracking-[0.5em] opacity-40 hover:opacity-100 transition-all uppercase pl-[0.5em]">
               <User size={16} className="group-hover:rotate-12 transition-transform" /> VIP PORTAL
             </button>
           ) : (
             <div className="flex flex-col items-center animate-[visionFocus_0.6s_forwards] max-w-[280px] text-center">
               {vipStage === 'mission' ? (
                 <>
-                  {/* 🟢 任務指引 (文字縮小、加寬行高，維持 Modern Zen 空気感) */}
                   <p className="text-[9px] tracking-[0.3em] leading-[2.2] text-black/40 mb-10 uppercase">
                     分享此頁面至 IG 限動並標記 @SILENT_ECHO<br/>
                     私訊截圖以領取專屬 ACCESS CODE
                   </p>
-                  <button 
-                    onClick={() => setVipStage('input')}
-                    className="text-[8px] tracking-[0.6em] border border-black/10 px-6 py-2 hover:bg-black hover:text-white transition-all uppercase pl-[0.6em]"
-                  >
-                    I Have a Code
-                  </button>
+                  <button onClick={() => setVipStage('input')} className="text-[8px] tracking-[0.6em] border border-black/10 px-6 py-2 hover:bg-black hover:text-white transition-all uppercase pl-[0.6em]">I Have a Code</button>
                   <button onClick={() => setVipOpen(false)} className="text-[7px] tracking-widest opacity-20 hover:opacity-100 uppercase mt-6">Maybe Later</button>
                 </>
               ) : (
@@ -234,15 +225,21 @@ export default function Home() {
             <h2 className="text-[10px] tracking-[1.2em] opacity-30 mb-20 uppercase pl-[1.2em]">The Philosophy</h2>
             <div className="space-y-16 text-left">
               <section>
-                <p className="text-[8px] tracking-[0.5em] opacity-20 mb-4 uppercase">Origin</p>
-                <p className="text-[13px] leading-[2.2] font-light opacity-60 tracking-widest">
-                  Silent Echo 誕生於對「純粹性」的渴求。在嘈雜的視覺時代，我們選擇回歸於虛無，透過氣味的共振尋找真實頻率。
+                <p className="text-[8px] tracking-[0.5em] opacity-20 mb-4 uppercase pl-[0.5em]">Mission</p>
+                <p className="text-[13px] leading-[2.4] font-light opacity-60 tracking-[0.15em]">
+                  在这个資訊過載的時代，氣味不應成為另一種選擇壓力。Silent Echo 致力於消除挑選香水時的焦慮，我們不談論成分，只談論你的頻率。
                 </p>
               </section>
               <section>
-                <p className="text-[8px] tracking-[0.5em] opacity-20 mb-4 uppercase">Method</p>
-                <p className="text-[13px] leading-[2.2] font-light opacity-60 tracking-widest">
-                  藉由 Modern Zen 的留白美學，我們將複雜的性格轉化為具象的氣味標籤。
+                <p className="text-[8px] tracking-[0.5em] opacity-20 mb-4 uppercase pl-[0.5em]">The Resonance</p>
+                <p className="text-[13px] leading-[2.4] font-light opacity-60 tracking-[0.15em]">
+                  如果你曾迷失於百貨公司的香氛專櫃，或是無法描述內心渴望的氣息，這裡將是你的歸宿。我們透過光影、節奏與留白，幫助你媒合出那支能與你靈魂共振的「回聲」。
+                </p>
+              </section>
+              <section>
+                <p className="text-[8px] tracking-[0.5em] opacity-20 mb-4 uppercase pl-[0.5em]">Method</p>
+                <p className="text-[13px] leading-[2.4] font-light opacity-60 tracking-[0.15em]">
+                  這是一場關於自我探尋的數位儀式。當你準備好關掉噪音，氣味就會浮現。
                 </p>
               </section>
               <div className="pt-12 flex justify-center"><div className="w-12 h-[0.5px] bg-black/10" /></div>
@@ -251,7 +248,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* VIP DASHBOARD (私人調香師手札) */}
+      {/* VIP DASHBOARD */}
       {step === 'vip_dashboard' && (
         <div className={`max-w-4xl w-full h-[70vh] flex flex-col ${fadeClass}`}>
           <div className="flex justify-between items-end mb-16 border-b border-black/[0.05] pb-8">
@@ -259,11 +256,10 @@ export default function Home() {
               <p className="text-[8px] tracking-[1em] opacity-20 mb-2 uppercase pl-[1em]">Portal Access</p>
               <h1 className="text-xl font-light tracking-[0.4em] uppercase">Private Archive</h1>
             </div>
-            <button onClick={() => { setIsVisible(false); setTimeout(() => { setStep('login'); setIsVisible(true); }, 800); }} className="flex items-center gap-2 opacity-20 hover:opacity-100 text-[8px] tracking-[0.4em] transition-all uppercase">
+            <button onClick={() => { setIsVisible(false); setTimeout(() => { setStep('login'); setIsVisible(true); }, 800); }} className="flex items-center gap-2 opacity-20 hover:opacity-100 text-[8px] tracking-[0.4em] transition-all uppercase pr-8">
               <ArrowLeft size={14} strokeWidth={1} /> Back to Entry
             </button>
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-20 overflow-y-auto pr-4 custom-scrollbar">
             {Object.values(PERFUME_MATCHES).map((item: any, idx) => (
               <div key={idx} className="group space-y-8 border-l border-black/[0.03] pl-8">
@@ -276,58 +272,43 @@ export default function Home() {
                   <h2 className="text-lg font-light tracking-wider uppercase">{item.title}</h2>
                 </div>
                 <div className="flex gap-4">
-                  <div className="flex items-center gap-2 px-3 py-1 bg-black/[0.02] border border-black/[0.05]">
-                    <Layers size={10} strokeWidth={1} className="opacity-30" />
-                    <span className="text-[7px] tracking-widest opacity-40 uppercase">{item.pantone}</span>
-                  </div>
-                  <div className="flex items-center gap-2 px-3 py-1 bg-black/[0.02] border border-black/[0.05]">
-                    <Microscope size={10} strokeWidth={1} className="opacity-30" />
-                    <span className="text-[7px] tracking-widest opacity-40 uppercase">{item.tag}</span>
-                  </div>
+                  <div className="flex items-center gap-2 px-3 py-1 bg-black/[0.02] border border-black/[0.05]"><Layers size={10} strokeWidth={1} className="opacity-30" /><span className="text-[7px] tracking-widest opacity-40 uppercase">{item.pantone}</span></div>
+                  <div className="flex items-center gap-2 px-3 py-1 bg-black/[0.02] border border-black/[0.05]"><Microscope size={10} strokeWidth={1} className="opacity-30" /><span className="text-[7px] tracking-widest opacity-40 uppercase">{item.tag}</span></div>
                 </div>
-                <p className="text-[11px] leading-[2.2] text-black/50 italic tracking-widest border-t border-black/[0.03] pt-6">
-                  {item.vipNote}
-                </p>
+                <p className="text-[11px] leading-[2.2] text-black/50 italic tracking-widest border-t border-black/[0.03] pt-6">{item.vipNote}</p>
               </div>
             ))}
           </div>
-          
-          {/* 🟢 彈窗解鎖後的實體優惠福利 (新增至 Dashboard 底部) */}
           <div className="mt-16 p-8 border border-dashed border-black/10 bg-black/[0.01] flex items-center justify-between">
               <div>
                 <p className="text-[8px] tracking-[1em] opacity-20 mb-3 uppercase pl-[1em]">Special Reward</p>
                 <h2 className="text-sm tracking-[0.3em] font-light">VIP 專屬實體香水 85 折優惠碼</h2>
               </div>
-              <div className="bg-white px-5 py-2 inline-block border border-black/5 text-[12px] tracking-[0.5em] font-mono pl-[0.5em]">
-                ECHO_SILENT_15OFF
-              </div>
-           </div>
+              <div className="bg-white px-5 py-2 inline-block border border-black/5 text-[12px] tracking-[0.5em] font-mono pl-[0.5em]">ECHO_SILENT_15OFF</div>
+          </div>
         </div>
       )}
 
-      {/* 以下其餘介面維持原樣... */}
       {showBlindLight && <div className="fixed inset-0 bg-white z-[120] animate-[blindLight_1s_ease-out_forwards]" />}
-      
+
+      {/* 🟢 更新後的 Login 介面：取消圖形，文案改為一行 */}
       {step === 'login' && (
         <div className={`max-w-md w-full text-center ${fadeClass}`}>
-          <div className="relative w-40 h-56 mx-auto mb-20 flex flex-col items-center justify-start pt-16 group">
-            <div className="relative w-32 h-32 rounded-full border border-black/15 animate-[nebulaFlow_15s_infinite] border-dashed" />
-            <div className="absolute top-[68%] -translate-y-1/2 flex flex-col items-center">
-              <div className="w-1.5 h-1.5 bg-black rounded-full mb-8" />
-              <span className="text-[7.5px] tracking-[1.15em] pl-[1.15em] text-black/40 uppercase">Find Your Scent</span>
-            </div>
+          <div className="h-40 flex items-center justify-center mb-16">
+             <span className="text-[9px] tracking-[1.4em] pl-[1.4em] text-black/40 uppercase font-light">Find Your Scent</span>
           </div>
           <button onClick={() => { setIsVisible(false); setTimeout(() => { setStep('quiz'); setIsVisible(true); }, 900); }} className="group relative px-12 py-3 overflow-hidden border border-black/10 hover:border-black transition-colors duration-500 uppercase">
-            <span className="relative z-10 text-[10px] tracking-[0.6em] group-hover:text-white transition-colors duration-500">ENTER PATH</span>
+            <span className="relative z-10 text-[10px] tracking-[0.6em] group-hover:text-white transition-colors duration-500 pl-[0.6em]">ENTER PATH</span>
             <div className="absolute inset-0 bg-black translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out"></div>
           </button>
         </div>
       )}
 
+      {/* 其他 Step (Quiz, Particle, Result) 保持不變... */}
       {step === 'quiz' && (
         <div className={`max-w-xl w-full text-center ${fadeClass}`}>
           <p className="text-[8px] tracking-[1em] text-black/20 uppercase mb-24">QUESTION 0{qIndex + 1}</p>
-          <p className="text-2xl mb-24 text-black/80 font-light px-6">「 {questions[qIndex].q} 」</p>
+          <p className="text-2xl mb-24 text-black/80 font-light px-6 px-6">「 {questions[qIndex].q} 」</p>
           <div className="flex flex-col gap-10">
             {questions[qIndex].options.map((opt, i) => (
               <button key={i} onClick={() => handleNextQuiz(opt.v)} className="group text-[11px] tracking-[0.4em] text-black/40 hover:text-black transition-all duration-500 flex flex-col items-center uppercase">
@@ -374,11 +355,11 @@ export default function Home() {
             <div className="flex justify-center gap-12 border-t border-black/5 pt-8 uppercase">
               <button onClick={saveResultCard} className="group flex flex-col items-center gap-2 opacity-20 hover:opacity-100 transition-all duration-700 ease-in-out">
                 <Download size={18} strokeWidth={1} className="group-hover:translate-y-[1px] transition-transform duration-500" />
-                <span className="text-[7px] tracking-widest uppercase">Save Match</span>
+                <span className="text-[7px] tracking-widest pl-[0.2em]">Save Match</span>
               </button>
               <button onClick={() => window.location.reload()} className="group flex flex-col items-center gap-2 opacity-20 hover:opacity-100 transition-all duration-700 ease-in-out">
                 <RotateCcw size={18} strokeWidth={1} className="group-hover:rotate-45 transition-transform duration-700" />
-                <span className="text-[7px] tracking-widest uppercase">Retry</span>
+                <span className="text-[7px] tracking-widest pl-[0.2em]">Retry</span>
               </button>
             </div>
           </div>
