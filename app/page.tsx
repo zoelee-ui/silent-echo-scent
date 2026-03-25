@@ -4,12 +4,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Download, RotateCcw, Menu, X, Compass, Flower2, User, ChevronRight, ArrowLeft, Layers, Microscope } from 'lucide-react';
 
 const PERFUME_MATCHES: { [key: string]: any } = {
-  CALM: { brand: "LE LABO", title: "SANTAL 33", tag: "WOODY ARCHIVE", pantone: "7530 C", notes: { Top: "紫羅蘭葉、小荳蔻", Heart: "鳶尾花、紙莎草", Base: "檀香木、皮革、琥珀" }, vipNote: "這支香水的靈魂在於澳洲檀香木的處理，呈現出一種略顯潮濕、如老舊圖書館般的紙張質感。", description: "隱居於都市的智者，平靜中帶有極致的個人風格。", hex: "#8E867E" },
-  WILD: { brand: "BYREDO", title: "MIXED EMOTIONS", tag: "RADICAL SPIRIT", pantone: "172 C", notes: { Top: "瑪黛茶、黑醋栗", Heart: "錫蘭紅茶、紫羅蘭葉", Base: "樺木、紙莎草" }, vipNote: "黑醋栗的酸與瑪黛茶的苦味在開場時會產生一種煙燻的衝突感，象徵著情緒的不可預測。", description: "混難中的和諧，適合直覺強烈且不願被定義的自由靈魂。", hex: "#E2583E" },
-  ETHERIAL: { brand: "DIPTYQUE", title: "L'EAU PAPIER", tag: "PAPER MUSK", pantone: "7527 C", notes: { Top: "白麝香", Heart: "含羞草、芝麻", Base: "琥珀、木質香" }, vipNote: "白麝香與烘烤芝麻的結合創造出一種極具顆粒感的「墨水感」，這在現代調香中非常罕見。", description: "墨水在紙張上暈開的詩意，捕捉如晨霧般的通透美感。", hex: "#D0F0C0" },
-  LUNAR: { brand: "AESOP", title: "GLOAM", tag: "FLORAL EARTH", pantone: "7512 C", notes: { Top: "粉紅胡椒、小荳蔻、苦橙葉", Heart: "藏紅花、茉莉花、含羞草", Base: "鳶尾花、廣藿香、古巴香脂" }, vipNote: "這款香水的高級感來自於古巴香脂的穩定性，它讓辛辣的前調平穩過渡到大地的草本氣息中。", description: "這款香水以令人迷戀的香辛料氣息開場，逐漸綻放充滿活力的獨特花香。", hex: "#F5E050" },
-  DARK: { brand: "BYREDO", title: "REINE DE NUIT", tag: "NIGHT VEIL", pantone: "Black 6 C", notes: { Top: "黑醋栗、番紅花", Heart: "焚香、玫瑰", Base: "黃葵籽、廣藿香" }, vipNote: "使用了高濃度的番紅花萃取，搭配略帶髒感的廣藿香，勾勒出一種帶有金屬感的哥德式冷酷。", description: "在深夜中綻放的午夜玫瑰，冷冽、高貴且帶有侵略性的視覺美感。", hex: "#2D1B2D" },
-  MYSTIC: { brand: "FUEGUIA 1833", title: "METAFORA", tag: "DREAMCORE", pantone: "Cool Gray 10 C", notes: { Top: "粉紅胡椒", Heart: "茉莉花", Base: "廣藿香" }, vipNote: "來自巴塔哥尼亞的天然原料，其氣味中含有一種難以捕捉的冷冽空氣感，像是清晨的機械廢墟。", description: "超現實的層次轉換，像是夢境中冰冷的機械零件與花朵混雜的抽象感。", hex: "#707070" }
+  CALM: { brand: "LE LABO", title: "SANTAL 33", tag: "WOODY ARCHIVE", pantone: "7530 C", notes: { Top: "紫羅蘭葉、小荳蔻", Heart: "鳶尾花、紙莎草", Base: "檀香木、皮革、琥珀" }, description: "隱居於都市的智者，平靜中帶有極致的個人風格。", hex: "#8E867E" },
+  WILD: { brand: "BYREDO", title: "MIXED EMOTIONS", tag: "RADICAL SPIRIT", pantone: "172 C", notes: { Top: "瑪黛茶、黑醋栗", Heart: "錫蘭紅茶、紫羅蘭葉", Base: "樺木、紙莎草" }, description: "混難中的和諧，適合直覺強烈且不願被定義的自由靈魂。", hex: "#E2583E" },
+  ETHERIAL: { brand: "DIPTYQUE", title: "L'EAU PAPIER", tag: "PAPER MUSK", pantone: "7527 C", notes: { Top: "白麝香", Heart: "含羞草、芝麻", Base: "琥珀、木質香" }, description: "墨水在紙張上暈開的詩意，捕捉如晨霧般的通透美感。", hex: "#D0F0C0" },
+  LUNAR: { brand: "AESOP", title: "GLOAM", tag: "FLORAL EARTH", pantone: "7512 C", notes: { Top: "粉紅胡椒、小荳蔻、苦橙葉", Heart: "藏紅花、茉莉花、含羞草", Base: "鳶尾花、廣藿香、古巴香脂" }, description: "這款香水以令人迷戀的香辛料氣息開場，逐漸綻放充滿活力的獨特花香。", hex: "#F5E050" },
+  DARK: { brand: "BYREDO", title: "REINE DE NUIT", tag: "NIGHT VEIL", pantone: "Black 6 C", notes: { Top: "黑醋栗、番紅花", Heart: "焚香、玫瑰", Base: "黃葵籽、廣藿香" }, description: "在深夜中綻放的午夜玫瑰，冷冽、高貴且帶有侵略性的視覺美感。", hex: "#2D1B2D" },
+  MYSTIC: { brand: "FUEGUIA 1833", title: "METAFORA", tag: "DREAMCORE", pantone: "Cool Gray 10 C", notes: { Top: "粉紅胡椒", Heart: "茉莉花", Base: "廣藿香" }, description: "超現實的層次轉換，像是夢境中冰冷的機械零件與花朵混雜的抽象感。", hex: "#707070" }
 };
 
 export default function Home() {
@@ -81,7 +81,6 @@ export default function Home() {
     await new Promise(r => setTimeout(r, 100));
     const html2canvas = (await import('html2canvas')).default;
     try {
-      // ✅ 優化：html2canvas 設置中明確啟用透明度
       const canvas = await html2canvas(resultRef.current, { scale: 3, backgroundColor: '#FDFDFD', useCORS: true, logging: false });
       const link = document.createElement('a');
       link.download = `Scent-Match-Result.png`;
@@ -97,9 +96,6 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-[#FDFDFD] flex items-center justify-center p-6 text-black select-none relative overflow-hidden font-sans" onMouseMove={handleMouseMove}>
       <style dangerouslySetInnerHTML={{ __html: `
-        @keyframes nebulaFlow { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-        @keyframes ringShock { 0% { transform: scale(0.5); opacity: 1; } 100% { transform: scale(4); opacity: 0; } }
-        @keyframes blindLight { 0% { opacity: 0; } 20% { opacity: 1; } 100% { opacity: 0; } }
         @keyframes visionFocus { 0% { filter: blur(20px); opacity: 0; } 100% { filter: blur(0px); opacity: 1; } }
         @keyframes scrollReveal { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         .reveal-item { animation: scrollReveal 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
@@ -144,7 +140,7 @@ export default function Home() {
       {/* BRAND STORY 彈窗 */}
       <div className={`fixed inset-0 z-[120] flex items-center justify-center p-8 transition-all duration-1000 ease-in-out ${storyOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
         <div className="absolute inset-0 bg-white/40 backdrop-blur-3xl" onClick={() => setStoryOpen(false)} />
-        <div className="relative max-w-xl w-full bg-[#FDFDFD] p-12 lg:p-20 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.03)] border border-black/[0.02] overflow-y-auto max-h-[80vh] custom-scrollbar reveal-container">
+        <div className="relative max-w-xl w-full bg-[#FDFDFD] p-12 lg:p-20 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.03)] border border-black/[0.02] overflow-y-auto max-h-[80vh] custom-scrollbar">
           <button onClick={() => setStoryOpen(false)} className="absolute top-8 right-8 opacity-20 hover:opacity-100 transition-opacity"><X size={20} strokeWidth={1} /></button>
           <div className="text-center">
             <div className="w-1 h-8 bg-black/10 mx-auto mb-12 reveal-item" />
@@ -205,13 +201,11 @@ export default function Home() {
         </div>
       )}
 
-      {/* 結果頁面 MATCH */}
+      {/* 結果頁面 */}
       {step === 'result' && (
         <div ref={resultRef} className={`w-full max-w-[420px] bg-[#FDFDFD] text-black p-16 border border-black/[0.02] relative overflow-hidden`} style={{ animation: 'visionFocus 3s forwards' }}>
-          {/* ✅ 關鍵修正：將 白色漸層覆蓋層 的 zIndex 設為最低 (-10)
-              這能確保 html2canvas 截圖時它在文字後面，文字能被黑色黑色捕捉到
-              同時在網頁上依然保留漸層氛圍 */}
-          <div className="absolute inset-0 z-[-10] pointer-events-none" style={{ background: `radial-gradient(circle at center, transparent 0%, #FDFDFD 80%)`, opacity: 0.4 }} />
+          {/* ✅ 修復截圖文字消失：將漸層層設為底層 */}
+          <div className="absolute inset-0 z-[-1] pointer-events-none" style={{ background: `radial-gradient(circle at center, transparent 0%, #FDFDFD 80%)`, opacity: 0.4 }} />
           
           <div className="relative z-10 text-center">
             <div className="flex justify-between text-[7px] tracking-[0.4em] opacity-30 mb-16 uppercase"><span>PANTONE® {res.pantone}</span><span>{res.tag}</span></div>
@@ -226,9 +220,9 @@ export default function Home() {
                  </div>
                ))}
             </div>
-            <button onClick={saveResultCard} className="group relative px-6 py-2 overflow-hidden border border-black/10 hover:border-black transition-colors uppercase">
-               <span className="relative z-10 text-[7px] tracking-widest group-hover:text-white transition-colors">SAVE MATCH</span>
-               <div className="absolute inset-0 bg-black translate-y-full group-hover:translate-y-0 transition-transform Ease-out" />
+            {/* ✅ 恢復前一版設計：極簡透明背景按鈕 */}
+            <button onClick={saveResultCard} className="opacity-20 hover:opacity-100 transition-all uppercase text-[7px] tracking-widest">
+              SAVE MATCH
             </button>
           </div>
         </div>
