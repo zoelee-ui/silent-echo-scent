@@ -1,12 +1,11 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-// 確保導入所有需要的 Icon
 import { Download, RotateCcw, Menu, X, Compass, Flower2, User, ChevronRight, ArrowLeft, Layers, Microscope } from 'lucide-react';
 
 const PERFUME_MATCHES: { [key: string]: any } = {
   CALM: { brand: "LE LABO", title: "SANTAL 33", tag: "WOODY ARCHIVE", pantone: "7530 C", notes: { Top: "紫羅蘭葉、小荳蔻", Heart: "鳶尾花、紙莎草", Base: "檀香木、皮革、琥珀" }, vipNote: "這支香水的靈魂在於澳洲檀香木的處理，呈現出一種略顯潮濕、如老舊圖書館般的紙張質感。", description: "隱居於都市的智者，平靜中帶有極致的個人風格。", hex: "#8E867E" },
-  WILD: { brand: "BYREDO", title: "MIXED EMOTIONS", tag: "RADICAL SPIRIT", pantone: "172 C", notes: { Top: "瑪黛茶、黑醋栗", Heart: "錫蘭紅茶、紫羅蘭葉", Base: "樺木、紙莎草" }, vipNote: "黑醋栗的酸與瑪黛茶的苦味在開場時會產生一種煙燻的衝突感，象徵著情緒的不可預測。", description: "混亂中的和諧，適合直覺強烈且不願被定義的自由靈魂。", hex: "#E2583E" },
+  WILD: { brand: "BYREDO", title: "MIXED EMOTIONS", tag: "RADICAL SPIRIT", pantone: "172 C", notes: { Top: "瑪黛茶、黑醋栗", Heart: "錫蘭紅茶、紫羅蘭葉", Base: "樺木、紙莎草" }, vipNote: "黑醋栗的酸與瑪黛茶的苦味在開場時會產生一種煙燻的衝突感，象徵著情緒的不可預測。", description: "混難中的和諧，適合直覺強烈且不願被定義的自由靈魂。", hex: "#E2583E" },
   ETHERIAL: { brand: "DIPTYQUE", title: "L'EAU PAPIER", tag: "PAPER MUSK", pantone: "7527 C", notes: { Top: "白麝香", Heart: "含羞草、芝麻", Base: "琥珀、木質香" }, vipNote: "白麝香與烘烤芝麻的結合創造出一種極具顆粒感的「墨水感」，這在現代調香中非常罕見。", description: "墨水在紙張上暈開的詩意，捕捉如晨霧般的通透美感。", hex: "#D0F0C0" },
   LUNAR: { brand: "AESOP", title: "GLOAM", tag: "FLORAL EARTH", pantone: "7512 C", notes: { Top: "粉紅胡椒、小荳蔻、苦橙葉", Heart: "藏紅花、茉莉花、含羞草", Base: "鳶尾花、廣藿香、古巴香脂" }, vipNote: "這款香水的高級感來自於古巴香脂的穩定性，它讓辛辣的前調平穩過渡到大地的草本氣息中。", description: "這款香水以令人迷戀的香辛料氣息開場，逐漸綻放充滿活力的獨特花香。", hex: "#F5E050" },
   DARK: { brand: "BYREDO", title: "REINE DE NUIT", tag: "NIGHT VEIL", pantone: "Black 6 C", notes: { Top: "黑醋栗、番紅花", Heart: "焚香、玫瑰", Base: "黃葵籽、廣藿香" }, vipNote: "使用了高濃度的番紅花萃取，搭配略帶髒感的廣藿香，勾勒出一種帶有金屬感的哥德式冷酷。", description: "在深夜中綻放的午夜玫瑰，冷冽、高貴且帶有侵略性的視覺美感。", hex: "#2D1B2D" },
@@ -82,6 +81,7 @@ export default function Home() {
     await new Promise(r => setTimeout(r, 100));
     const html2canvas = (await import('html2canvas')).default;
     try {
+      // ✅ 優化：html2canvas 設置中明確啟用透明度
       const canvas = await html2canvas(resultRef.current, { scale: 3, backgroundColor: '#FDFDFD', useCORS: true, logging: false });
       const link = document.createElement('a');
       link.download = `Scent-Match-Result.png`;
@@ -108,27 +108,21 @@ export default function Home() {
         .reveal-delay-3 { animation-delay: 0.6s; }
       `}} />
 
-      {/* 固定導航欄 - 已修復 ICON 顯示 */}
+      {/* 導航 */}
       <nav className="fixed top-0 left-0 w-full z-[110] px-8 py-6 flex justify-between items-center bg-white/5 backdrop-blur-md border-b border-black/[0.03]">
         <div className="text-[9px] tracking-[0.8em] font-light opacity-60">SILENT ECHO</div>
-        <button onClick={() => { setNavOpen(!navOpen); setVipOpen(false); }} className="p-2 hover:opacity-50 transition-opacity flex items-center justify-center">
+        <button onClick={() => { setNavOpen(!navOpen); setVipOpen(false); }} className="p-2 hover:opacity-50 transition-opacity">
           {navOpen ? <X size={18} strokeWidth={1} /> : <Menu size={18} strokeWidth={1} />}
         </button>
       </nav>
 
-      {/* 全螢幕選單 */}
+      {/* 選單 */}
       <div className={`fixed inset-0 z-[105] bg-[#FDFDFD]/95 backdrop-blur-xl transition-all duration-700 ease-in-out ${navOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
         <div className="h-full flex flex-col items-center justify-center gap-12">
-          <button onClick={() => { setStoryOpen(true); setNavOpen(false); }} className="group flex items-center gap-4 text-[10px] tracking-[0.5em] opacity-40 hover:opacity-100 uppercase">
-            <Compass size={16} strokeWidth={1} className="group-hover:rotate-12 transition-transform" /> BRAND STORY
-          </button>
-          <button onClick={() => { setNavOpen(false); window.location.reload(); }} className="group flex items-center gap-4 text-[10px] tracking-[0.5em] opacity-40 hover:opacity-100 uppercase">
-            <Flower2 size={16} strokeWidth={1} className="group-hover:rotate-12 transition-transform" /> SCENT TEST
-          </button>
+          <button onClick={() => { setStoryOpen(true); setNavOpen(false); }} className="group flex items-center gap-4 text-[10px] tracking-[0.5em] opacity-40 hover:opacity-100 uppercase">BRAND STORY</button>
+          <button onClick={() => { setNavOpen(false); window.location.reload(); }} className="group flex items-center gap-4 text-[10px] tracking-[0.5em] opacity-40 hover:opacity-100 uppercase">SCENT TEST</button>
           {!vipOpen ? (
-            <button onClick={() => { setVipOpen(true); setVipStage('mission'); }} className="group flex items-center gap-4 text-[10px] tracking-[0.5em] opacity-40 hover:opacity-100 uppercase">
-              <User size={16} strokeWidth={1} className="group-hover:rotate-12 transition-transform" /> VIP PORTAL
-            </button>
+            <button onClick={() => { setVipOpen(true); setVipStage('mission'); }} className="group flex items-center gap-4 text-[10px] tracking-[0.5em] opacity-40 hover:opacity-100 uppercase">VIP PORTAL</button>
           ) : (
             <div className="flex flex-col items-center max-w-[280px] text-center">
               {vipStage === 'mission' ? (
@@ -138,10 +132,8 @@ export default function Home() {
                 </>
               ) : (
                 <form onSubmit={(e) => { e.preventDefault(); if (vipCode.toUpperCase() === 'ECHO-IG-2026') { setNavOpen(false); setVipOpen(false); setStep('vip_dashboard'); } }} className="flex flex-col items-center">
-                  <div className="relative flex items-center border-b border-black/20 pb-2 mb-4 w-48">
-                    <input autoFocus type="text" placeholder="ACCESS CODE" value={vipCode} onChange={(e) => setVipCode(e.target.value)} className="bg-transparent text-[10px] tracking-[0.3em] outline-none w-full text-center uppercase" />
-                    <button type="submit" className="absolute -right-8 opacity-20 hover:opacity-100"><ChevronRight size={16} /></button>
-                  </div>
+                  <input autoFocus type="text" placeholder="ACCESS CODE" value={vipCode} onChange={(e) => setVipCode(e.target.value)} className="bg-transparent text-[10px] tracking-[0.3em] outline-none border-b border-black/20 pb-2 mb-4 w-48 text-center uppercase" />
+                  <button type="submit" className="opacity-20 hover:opacity-100 transition-opacity"><ChevronRight size={16} /></button>
                 </form>
               )}
             </div>
@@ -152,7 +144,7 @@ export default function Home() {
       {/* BRAND STORY 彈窗 */}
       <div className={`fixed inset-0 z-[120] flex items-center justify-center p-8 transition-all duration-1000 ease-in-out ${storyOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
         <div className="absolute inset-0 bg-white/40 backdrop-blur-3xl" onClick={() => setStoryOpen(false)} />
-        <div className="relative max-w-xl w-full bg-[#FDFDFD] p-12 lg:p-20 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.03)] border border-black/[0.02] overflow-y-auto max-h-[80vh] custom-scrollbar">
+        <div className="relative max-w-xl w-full bg-[#FDFDFD] p-12 lg:p-20 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.03)] border border-black/[0.02] overflow-y-auto max-h-[80vh] custom-scrollbar reveal-container">
           <button onClick={() => setStoryOpen(false)} className="absolute top-8 right-8 opacity-20 hover:opacity-100 transition-opacity"><X size={20} strokeWidth={1} /></button>
           <div className="text-center">
             <div className="w-1 h-8 bg-black/10 mx-auto mb-12 reveal-item" />
@@ -213,9 +205,14 @@ export default function Home() {
         </div>
       )}
 
-      {/* 結果頁面 */}
+      {/* 結果頁面 MATCH */}
       {step === 'result' && (
         <div ref={resultRef} className={`w-full max-w-[420px] bg-[#FDFDFD] text-black p-16 border border-black/[0.02] relative overflow-hidden`} style={{ animation: 'visionFocus 3s forwards' }}>
+          {/* ✅ 關鍵修正：將 白色漸層覆蓋層 的 zIndex 設為最低 (-10)
+              這能確保 html2canvas 截圖時它在文字後面，文字能被黑色黑色捕捉到
+              同時在網頁上依然保留漸層氛圍 */}
+          <div className="absolute inset-0 z-[-10] pointer-events-none" style={{ background: `radial-gradient(circle at center, transparent 0%, #FDFDFD 80%)`, opacity: 0.4 }} />
+          
           <div className="relative z-10 text-center">
             <div className="flex justify-between text-[7px] tracking-[0.4em] opacity-30 mb-16 uppercase"><span>PANTONE® {res.pantone}</span><span>{res.tag}</span></div>
             <p className="text-[10px] tracking-[0.4em] text-black/30 mb-2 uppercase">{res.brand}</p>
@@ -225,20 +222,14 @@ export default function Home() {
                {Object.entries(res.notes).map(([key, note]: any) => (
                  <div key={key} className="flex flex-col items-center uppercase">
                    <span className="text-[6px] tracking-[0.8em] text-black/10 mb-1">{key} NOTES</span>
-                   <span className="text-[11px] tracking-[0.2em] text-black/70 px-4">{note}</span>
+                   <span className="text-[11px] tracking-[0.2em] text-black/70 px-4 leading-relaxed">{note}</span>
                  </div>
                ))}
             </div>
-            <div className="flex justify-center gap-12">
-              <button onClick={saveResultCard} className="group flex flex-col items-center gap-2 opacity-20 hover:opacity-100 transition-all uppercase">
-                <Download size={18} strokeWidth={1} />
-                <span className="text-[7px] tracking-widest">SAVE</span>
-              </button>
-              <button onClick={() => window.location.reload()} className="group flex flex-col items-center gap-2 opacity-20 hover:opacity-100 transition-all uppercase">
-                <RotateCcw size={18} strokeWidth={1} />
-                <span className="text-[7px] tracking-widest">RETRY</span>
-              </button>
-            </div>
+            <button onClick={saveResultCard} className="group relative px-6 py-2 overflow-hidden border border-black/10 hover:border-black transition-colors uppercase">
+               <span className="relative z-10 text-[7px] tracking-widest group-hover:text-white transition-colors">SAVE MATCH</span>
+               <div className="absolute inset-0 bg-black translate-y-full group-hover:translate-y-0 transition-transform Ease-out" />
+            </button>
           </div>
         </div>
       )}
