@@ -1,37 +1,51 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Download, RotateCcw, Menu, X, Compass, Flower2, User } from 'lucide-react';
+import { Download, RotateCcw, Menu, X, Compass, Flower2, User, ChevronRight } from 'lucide-react';
 
-// 1. 市售香水資料庫 (對應測驗結果)
+// 1. 完整 6 款市售香水資料庫
 const PERFUME_MATCHES: { [key: string]: any } = {
   CALM: { 
     brand: "LE LABO", title: "Santal 33", 
     tag: "WOODY ARCHIVE", pantone: "7530 C",
-    notes: { Top: "紫羅蘭葉", Heart: "小荳蔻", Base: "檀香木、皮革" },
-    description: "這款香水如同隱居於都市的智者，平靜中帶有極致的個人風格。",
+    notes: { Top: "紫羅蘭葉、小荳蔻", Heart: "鳶尾花、紙莎草", Base: "檀香木、皮革、琥珀" },
+    description: "隱居於都市的智者，平靜中帶有極致的個人風格。",
     hex: "#8E867E"
   },
   WILD: { 
     brand: "BYREDO", title: "Mixed Emotions", 
     tag: "RADICAL SPIRIT", pantone: "172 C",
-    notes: { Top: "瑪黛茶", Heart: "黑醋栗", Base: "樺木、紙莎草" },
+    notes: { Top: "瑪黛茶、黑醋栗", Heart: "錫蘭紅茶、紫羅蘭葉", Base: "樺木、紙莎草" },
     description: "混亂中的和諧，適合直覺強烈且不願被定義的自由靈魂。",
     hex: "#E2583E"
   },
   ETHERIAL: { 
     brand: "DIPTYQUE", title: "L'Eau Papier", 
     tag: "PAPER MUSK", pantone: "7527 C",
-    notes: { Top: "芝麻", Heart: "含羞草", Base: "白麝香、木質香" },
+    notes: { Top: "白麝香", Heart: "含羞草、芝麻", Base: "琥珀、木質香" },
     description: "墨水在紙張上暈開的詩意，捕捉如晨霧般的通透美感。",
     hex: "#D0F0C0"
   },
   LUNAR: { 
     brand: "AESOP", title: "Gloam", 
-    tag: "FLORAL SHADOW", pantone: "7512 C",
-    notes: { Top: "粉紅胡椒", Heart: "藏紅花", Base: "鳶尾花、廣藿香" },
-    description: "夜晚的溫潤律動，在靜謐的月光下緩緩綻放感官層次。",
+    tag: "FLORAL EARTH", pantone: "7512 C",
+    notes: { Top: "粉紅胡椒、小荳蔻、苦橙葉", Heart: "藏紅花、茉莉花、含羞草", Base: "鳶尾花、廣藿香、古巴香脂" },
+    description: "這款香水以令人迷戀的香辛料氣息開場，逐漸綻放活力花香與大地底蘊。",
     hex: "#F5E050"
+  },
+  DARK: { 
+    brand: "BYREDO", title: "Reine de Nuit", 
+    tag: "NIGHT VEIL", pantone: "Black 6 C",
+    notes: { Top: "黑醋栗、番紅花", Heart: "焚香、玫瑰", Base: "黃葵籽、廣藿香" },
+    description: "在深夜中綻放的午夜玫瑰，冷冽、高貴且帶有侵略性的哥德美感。",
+    hex: "#2D1B2D" 
+  },
+  MYSTIC: { 
+    brand: "FUEGUIA 1833", title: "Metafora", 
+    tag: "DREAMCORE", pantone: "Cool Gray 10 C",
+    notes: { Top: "粉紅胡椒", Heart: "茉莉花", Base: "廣藿香" },
+    description: "超現實的層次轉換，像是夢境中冰冷的機械零件與花朵混雜的抽象感。",
+    hex: "#707070"
   }
 };
 
@@ -40,7 +54,10 @@ export default function Home() {
   const [qIndex, setQIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
   const [navOpen, setNavOpen] = useState(false);
-  const [sentiment, setSentiment] = useState({ CALM: 0, WILD: 0, ETHERIAL: 0, LUNAR: 0 });
+  const [storyOpen, setStoryOpen] = useState(false);
+  const [vipOpen, setVipOpen] = useState(false);
+  const [vipCode, setVipCode] = useState('');
+  const [sentiment, setSentiment] = useState({ CALM: 0, WILD: 0, ETHERIAL: 0, LUNAR: 0, DARK: 0, MYSTIC: 0 });
   const [progress, setProgress] = useState(0);
   const [isExploding, setIsExploding] = useState(false);
   const [showBlindLight, setShowBlindLight] = useState(false);
@@ -52,10 +69,10 @@ export default function Home() {
 
   const questions = [
     { q: "當你置身於一個空間，你最先注意到的是？", options: [{ t: "光影的留白", v: 'ETHERIAL' }, { t: "材質的觸感", v: 'CALM' }] },
-    { q: "你傾向如何開啟一段對話？", options: [{ t: "溫柔地傾聽", v: 'LUNAR' }, { t: "直接地表達", v: 'WILD' }] },
-    { q: "哪種自然元素最能代表你的能量？", options: [{ t: "深埋的礦石", v: 'CALM' }, { t: "流動的晨霧", v: 'ETHERIAL' }] },
-    { q: "在人群中，你更享受哪種狀態？", options: [{ t: "靜謐的觀察者", v: 'LUNAR' }, { t: "熱情的帶領者", v: 'WILD' }] },
-    { q: "你的直覺更傾向於哪種律動？", options: [{ t: "緩慢的潮汐", v: 'CALM' }, { t: "無規則的閃爍", v: 'WILD' }] },
+    { q: "在一段漫長的沉默中，你期待什麼出現？", options: [{ t: "隱約的幽暗", v: 'DARK' }, { t: "溫潤的餘溫", v: 'LUNAR' }] },
+    { q: "哪種自然元素最能代表你的能量？", options: [{ t: "流動的晨露", v: 'ETHERIAL' }, { t: "無機的機械", v: 'MYSTIC' }] },
+    { q: "你最渴望在哪種時刻停留在當下？", options: [{ t: "深夜的慶典", v: 'DARK' }, { t: "日落的奔跑", v: 'WILD' }] },
+    { q: "你的直覺更傾向於哪種律動？", options: [{ t: "緩慢的潮汐", v: 'CALM' }, { t: "無規則的閃爍", v: 'MYSTIC' }] },
   ];
 
   const handleNextQuiz = (val: string) => {
@@ -70,6 +87,18 @@ export default function Home() {
         setIsVisible(true);
       }
     }, 800);
+  };
+
+  const handleVipSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (vipCode.toUpperCase() === 'ECHO-2026') {
+      alert("VIP 認證成功。正在進入專屬門戶...");
+      setNavOpen(false);
+      setVipOpen(false);
+    } else {
+      setVipCode('');
+      alert("序號無效，請聯繫品牌顧問。");
+    }
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
@@ -130,27 +159,77 @@ export default function Home() {
         }
       `}} />
 
-      {/* 3. 導航欄功能 (Navigation Bar) */}
+      {/* 導航欄 */}
       <nav className="fixed top-0 left-0 w-full z-[110] px-8 py-6 flex justify-between items-center bg-white/5 backdrop-blur-md border-b border-black/[0.03]">
         <div className="text-[9px] tracking-[0.8em] font-light opacity-60">SILENT ECHO</div>
-        <button onClick={() => setNavOpen(!navOpen)} className="p-2 hover:opacity-50 transition-opacity">
+        <button onClick={() => { setNavOpen(!navOpen); setVipOpen(false); }} className="p-2 hover:opacity-50 transition-opacity">
           {navOpen ? <X size={18} strokeWidth={1} /> : <Menu size={18} strokeWidth={1} />}
         </button>
       </nav>
 
-      {/* 導航展開菜單 */}
+      {/* 導航選單 */}
       <div className={`fixed inset-0 z-[105] bg-[#FDFDFD]/95 backdrop-blur-xl transition-all duration-700 ease-in-out ${navOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
         <div className="h-full flex flex-col items-center justify-center gap-12">
-          {[
-            { label: "BRAND STORY", icon: <Compass size={16} /> },
-            { label: "SCENT TEST", icon: <Flower2 size={16} /> },
-            { label: "VIP PORTAL", icon: <User size={16} /> }
-          ].map((item, idx) => (
-            <button key={idx} className="group flex items-center gap-4 text-[10px] tracking-[0.5em] opacity-40 hover:opacity-100 transition-all">
-              <span className="group-hover:rotate-12 transition-transform">{item.icon}</span>
-              {item.label}
+          <button onClick={() => { setStoryOpen(true); setNavOpen(false); }} className="group flex items-center gap-4 text-[10px] tracking-[0.5em] opacity-40 hover:opacity-100 transition-all">
+            <Compass size={16} className="group-hover:rotate-12 transition-transform" /> BRAND STORY
+          </button>
+          
+          <button onClick={() => { setNavOpen(false); window.location.reload(); }} className="group flex items-center gap-4 text-[10px] tracking-[0.5em] opacity-40 hover:opacity-100 transition-all">
+            <Flower2 size={16} className="group-hover:rotate-12 transition-transform" /> SCENT TEST
+          </button>
+
+          {/* 🟢 VIP PORTAL 交互區域 */}
+          {!vipOpen ? (
+            <button onClick={() => setVipOpen(true)} className="group flex items-center gap-4 text-[10px] tracking-[0.5em] opacity-40 hover:opacity-100 transition-all">
+              <User size={16} className="group-hover:rotate-12 transition-transform" /> VIP PORTAL
             </button>
-          ))}
+          ) : (
+            <form onSubmit={handleVipSubmit} className="flex flex-col items-center animate-[visionFocus_0.6s_forwards]">
+              <div className="relative flex items-center border-b border-black/20 pb-2 mb-4 w-48">
+                <input 
+                  autoFocus
+                  type="text" 
+                  placeholder="ENTER ACCESS CODE" 
+                  value={vipCode}
+                  onChange={(e) => setVipCode(e.target.value)}
+                  className="bg-transparent text-[10px] tracking-[0.3em] outline-none w-full placeholder:text-black/10 text-center uppercase"
+                />
+                <button type="submit" className="absolute -right-8 opacity-20 hover:opacity-100 transition-opacity">
+                  <ChevronRight size={16} />
+                </button>
+              </div>
+              <button onClick={() => setVipOpen(false)} className="text-[7px] tracking-widest opacity-20 hover:opacity-100 uppercase mt-2">CANCEL</button>
+            </form>
+          )}
+        </div>
+      </div>
+
+      {/* BRAND STORY 彈窗 */}
+      <div className={`fixed inset-0 z-[120] flex items-center justify-center p-8 transition-all duration-1000 ease-in-out ${storyOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+        <div className="absolute inset-0 bg-white/40 backdrop-blur-3xl" onClick={() => setStoryOpen(false)} />
+        <div className="relative max-w-xl w-full bg-[#FDFDFD] p-12 lg:p-20 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.03)] border border-black/[0.02] overflow-y-auto max-h-[80vh]">
+          <button onClick={() => setStoryOpen(false)} className="absolute top-8 right-8 opacity-20 hover:opacity-100 transition-opacity">
+            <X size={20} strokeWidth={1} />
+          </button>
+          <div className="text-center">
+            <div className="w-1 h-8 bg-black/10 mx-auto mb-12" />
+            <h2 className="text-[10px] tracking-[1.2em] opacity-30 mb-20 uppercase pl-[1.2em]">The Philosophy</h2>
+            <div className="space-y-16 text-left">
+              <section>
+                <p className="text-[8px] tracking-[0.5em] opacity-20 mb-4 uppercase">Origin</p>
+                <p className="text-[13px] leading-[2.2] font-light opacity-60 tracking-widest">
+                  Silent Echo 誕生於對「純粹性」的渴求。在嘈雜的視覺時代，我們選擇回歸於虛無，透過氣味的共振尋找真實頻率。
+                </p>
+              </section>
+              <section>
+                <p className="text-[8px] tracking-[0.5em] opacity-20 mb-4 uppercase">Method</p>
+                <p className="text-[13px] leading-[2.2] font-light opacity-60 tracking-widest">
+                  藉由 Modern Zen 的留白美學，我們將複雜的性格轉化為具象的氣味標籤。
+                </p>
+              </section>
+              <div className="pt-12 flex justify-center"><div className="w-12 h-[0.5px] bg-black/10" /></div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -215,16 +294,14 @@ export default function Home() {
             <p className="text-[10px] tracking-[0.4em] text-black/30 mb-2 uppercase">{res.brand}</p>
             <h1 className="text-3xl font-light mb-8 tracking-[0.1em] uppercase">{res.title}</h1>
             <p className="text-[11px] text-black/50 italic mb-16 leading-relaxed px-4">{res.description}</p>
-            
             <div className="grid grid-cols-1 gap-10 py-8 border-y border-black/5 mb-16">
                {Object.entries(res.notes).map(([key, note]: any) => (
                  <div key={key} className="flex flex-col items-center">
                    <span className="text-[6px] tracking-[0.8em] text-black/10 uppercase mb-1">{key} Note</span>
-                   <span className="text-[11px] tracking-[0.2em] text-black/70">{note}</span>
+                   <span className="text-[11px] tracking-[0.2em] text-black/70 px-4 leading-relaxed">{note}</span>
                  </div>
                ))}
             </div>
-            
             <div className="flex justify-center gap-12 border-t border-black/5 pt-8">
               <button onClick={saveResultCard} className="group flex flex-col items-center gap-2 opacity-20 hover:opacity-100 transition-all duration-700 ease-in-out">
                 <Download size={18} strokeWidth={1} className="group-hover:translate-y-[1px] transition-transform duration-500" />
