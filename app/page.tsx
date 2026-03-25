@@ -133,17 +133,32 @@ export default function Home() {
   const saveResultCard = async () => {
     if(!resultRef.current) return;
     setIsCapturing(true); 
-    await new Promise(r => setTimeout(r, 100));
+    
+    // 給予足夠的 UI 反應時間
+    await new Promise(r => setTimeout(r, 200));
+
     const html2canvas = (await import('html2canvas')).default;
     try {
       const canvas = await html2canvas(resultRef.current, {
         scale: 3,
-        backgroundColor: '#FDFDFD', 
         useCORS: true,
         logging: false,
+        backgroundColor: '#FDFDFD', // 基礎底色
+        onclone: (clonedDoc) => {
+          // 在克隆的 DOM 中強制設定背景漸層，避免動畫導致的色彩丟失
+          const card = clonedDoc.querySelector('[data-result-card="true"]') as HTMLElement;
+          if (card) {
+            const bgOverlay = card.querySelector('[data-bg-overlay="true"]') as HTMLElement;
+            if (bgOverlay) {
+              bgOverlay.style.animation = 'none';
+              bgOverlay.style.opacity = '0.4'; // 固定透明度
+              bgOverlay.style.background = `radial-gradient(circle at center, ${res.hex} 0%, transparent 70%)`;
+            }
+          }
+        }
       });
       const link = document.createElement('a');
-      link.download = `Scent-Match-Result.png`;
+      link.download = `SILENT-ECHO-${res.title}.png`;
       link.href = canvas.toDataURL('image/png', 1.0);
       link.click();
     } catch (err) { console.error(err); } finally { setIsCapturing(false); }
@@ -161,15 +176,15 @@ export default function Home() {
         @keyframes blindLight { 0% { opacity: 0; } 20% { opacity: 1; } 100% { opacity: 0; } }
         @keyframes visionFocus { 0% { filter: blur(20px); opacity: 0; } 100% { filter: blur(0px); opacity: 1; } }
         @keyframes lowSaturatePulse {
-          0%, 100% { opacity: 0.15; filter: blur(60px) saturate(30%); }
-          50% { opacity: 0.25; filter: blur(80px) saturate(45%); }
+          0%, 100% { opacity: 0.2; filter: blur(60px) saturate(30%); }
+          50% { opacity: 0.35; filter: blur(80px) saturate(50%); }
         }
         .custom-scrollbar::-webkit-scrollbar { width: 3px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.05); border-radius: 10px; }
       `}} />
 
-      {/* 導航欄 - 標題全大寫 */}
+      {/* 導航欄 */}
       <nav className="fixed top-0 left-0 w-full z-[110] px-6 md:px-12 py-6 md:py-8 flex justify-between items-center bg-white/5 backdrop-blur-md border-b border-black/[0.03]">
         <div className="text-[9px] md:text-[11px] tracking-[0.8em] font-light opacity-60">SILENT ECHO</div>
         <button onClick={() => { setNavOpen(!navOpen); setVipOpen(false); }} className="p-2 hover:opacity-50 transition-opacity">
@@ -177,7 +192,7 @@ export default function Home() {
         </button>
       </nav>
 
-      {/* 導航選單 - 選項全大寫 */}
+      {/* 導航選單 */}
       <div className={`fixed inset-0 z-[105] bg-[#FDFDFD]/95 backdrop-blur-xl transition-all duration-700 ease-in-out ${navOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
         <div className="h-full flex flex-col items-center justify-center gap-10 md:gap-14">
           <button onClick={() => { setStoryOpen(true); setNavOpen(false); }} className="group flex items-center gap-4 text-[10px] md:text-[12px] tracking-[0.5em] opacity-40 hover:opacity-100 transition-all uppercase pl-[0.5em]">
@@ -215,7 +230,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* BRAND STORY 彈窗 - 標題全大寫 */}
+      {/* BRAND STORY 彈窗 */}
       <div className={`fixed inset-0 z-[120] flex items-center justify-center p-4 md:p-8 transition-all duration-1000 ease-in-out ${storyOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
         <div className="absolute inset-0 bg-white/40 backdrop-blur-3xl" onClick={() => setStoryOpen(false)} />
         <div className="relative max-w-2xl w-full bg-[#FDFDFD] p-10 md:p-24 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.03)] border border-black/[0.02] overflow-y-auto max-h-[85vh] custom-scrollbar">
@@ -338,15 +353,29 @@ export default function Home() {
         </div>
       )}
 
-      {/* Result */}
+      {/* Result - 修正漸層丟失問題 */}
       {step === 'result' && (
         <div className="w-full flex flex-col items-center justify-center min-h-[80vh] py-10">
-          <div ref={resultRef} className={`w-full max-w-[420px] md:max-w-[460px] bg-[#FDFDFD] text-black p-12 md:p-16 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.05)] border border-black/[0.02] relative overflow-hidden ${isCapturing ? '!filter-none !opacity-100' : ''}`} style={{ animation: isCapturing ? 'none' : 'visionFocus 3s forwards' }}>
-            <div className="absolute inset-0 opacity-100 pointer-events-none">
-                {!isCapturing && (
-                  <div className="absolute inset-0 animate-[lowSaturatePulse_8s_infinite] transition-opacity duration-[3000ms]" style={{ background: `radial-gradient(circle at center, ${res.hex} 0%, #FDFDFD 80%)` }} />
-                )}
+          <div 
+            ref={resultRef} 
+            data-result-card="true"
+            className={`w-full max-w-[420px] md:max-w-[460px] bg-[#FDFDFD] text-black p-12 md:p-16 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.05)] border border-black/[0.02] relative overflow-hidden ${isCapturing ? '!filter-none !opacity-100' : ''}`} 
+            style={{ animation: isCapturing ? 'none' : 'visionFocus 3s forwards' }}
+          >
+            {/* 背景漸層層 */}
+            <div 
+              data-bg-overlay="true"
+              className="absolute inset-0 pointer-events-none"
+              style={{ 
+                background: `radial-gradient(circle at center, ${res.hex} 0%, transparent 75%)`,
+                opacity: isCapturing ? 0.4 : undefined // 截圖時固定透明度
+              }}
+            >
+              {!isCapturing && (
+                <div className="absolute inset-0 animate-[lowSaturatePulse_8s_infinite] transition-opacity duration-[3000ms]" style={{ background: `radial-gradient(circle at center, ${res.hex} 0%, transparent 80%)` }} />
+              )}
             </div>
+
             <div className="relative z-10 text-center">
               <div className="flex justify-between text-[7px] md:text-[8px] tracking-[0.4em] opacity-30 mb-14 md:mb-20 uppercase"><span>PANTONE® {res.pantone}</span><span>{res.tag}</span></div>
               <p className="text-[10px] md:text-[11px] tracking-[0.4em] text-black/30 mb-2 uppercase">{res.brand}</p>
