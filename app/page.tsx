@@ -16,18 +16,9 @@ export default function Home() {
   const [step, setStep] = useState('login');
   const [qIndex, setQIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
-  const [navOpen, setNavOpen] = useState(false);
-  const [storyOpen, setStoryOpen] = useState(false);
-  const [vipOpen, setVipOpen] = useState(false);
-  const [vipStage, setVipStage] = useState('mission');
-  const [vipCode, setVipCode] = useState('');
   const [sentiment, setSentiment] = useState({ CALM: 0, WILD: 0, ETHERIAL: 0, LUNAR: 0, DARK: 0, MYSTIC: 0 });
-  const [progress, setProgress] = useState(0);
   const [isCapturing, setIsCapturing] = useState(false);
-
   const resultRef = useRef<HTMLDivElement>(null);
-  const totalRotation = useRef(0);
-  const lastAngle = useRef<number | null>(null);
 
   const questions = [
     { q: "當你置身於一個空間，你最先注意到的是？", options: [{ t: "光影的留白", v: 'ETHERIAL' }, { t: "材質的觸感", v: 'CALM' }] },
@@ -45,7 +36,7 @@ export default function Home() {
         setQIndex(qIndex + 1);
         setIsVisible(true);
       } else {
-        setStep('particle');
+        setStep('result');
         setIsVisible(true);
       }
     }, 800);
@@ -54,90 +45,102 @@ export default function Home() {
   const saveResultCard = async () => {
     if(!resultRef.current) return;
     setIsCapturing(true); 
-    await new Promise(r => setTimeout(r, 200));
+    await new Promise(r => setTimeout(r, 300)); // 給予足夠的渲染緩衝
     const html2canvas = (await import('html2canvas')).default;
     try {
       const canvas = await html2canvas(resultRef.current, {
-        scale: 3,
+        scale: 2, // 適度降低倍率提高穩定性
         useCORS: true,
-        logging: false,
-        backgroundColor: '#FDFDFD',
+        allowTaint: true,
+        backgroundColor: "#FDFDFD", // 顯式定義底色，防止全白
         onclone: (clonedDoc) => {
           const card = clonedDoc.querySelector('[data-result-card="true"]') as HTMLElement;
           if (card) {
-            const gradientOverlay = clonedDoc.querySelector('[data-gradient-overlay="true"]') as HTMLElement;
-            if (gradientOverlay) {
-                gradientOverlay.style.animation = 'none';
-                gradientOverlay.style.opacity = '0.2'; // 截圖時固定透明度
-                // 🟠 ✅ 修正關鍵：保持顏色乾淨，不降低飽和度與明度
-                gradientOverlay.style.background = `radial-gradient(circle at center, ${res.hex} 0%, transparent 80%)`;
+            card.style.opacity = "1";
+            card.style.filter = "none";
+            // 💡 關鍵修正：截圖時強制使用「高明度」的乾淨背景
+            const overlay = card.querySelector('[data-gradient-overlay="true"]') as HTMLElement;
+            if (overlay) {
+              overlay.style.opacity = "0.15"; 
+              overlay.style.background = `radial-gradient(circle at center, ${res.hex} 0%, transparent 85%)`;
             }
           }
         }
       });
       const link = document.createElement('a');
-      link.download = `Scent-Match-Result.png`;
-      link.href = canvas.toDataURL('image/png', 1.0);
+      link.download = `Silent-Echo-Result.png`;
+      link.href = canvas.toDataURL('image/png');
       link.click();
-    } catch (err) { console.error(err); } finally { setIsCapturing(false); }
+    } catch (err) { 
+      console.error("Capture failed:", err); 
+    } finally { 
+      setIsCapturing(false); 
+    }
   };
 
   const resKey = Object.entries(sentiment).sort((a, b) => b[1] - a[1])[0][0];
   const res = PERFUME_MATCHES[resKey] || PERFUME_MATCHES.CALM;
-  const fadeClass = `transition-all duration-1000 ease-out ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-[0.98]'}`;
 
   return (
-    <main className="min-h-screen bg-[#FDFDFD] flex items-center justify-center p-4 md:p-12 text-black select-none relative overflow-hidden font-sans">
+    <main className="min-h-screen bg-[#FDFDFD] flex items-center justify-center text-black relative overflow-hidden font-sans">
       <style dangerouslySetInnerHTML={{ __html: `
-        @keyframes visionFocus { 0% { filter: blur(20px); opacity: 0; } 100% { filter: blur(0px); opacity: 1; } }
-        /* ✅ 修正核心：優化動畫色彩，透明度降得更低 (0.12-0.25)，確保顏色乾淨、通透、無灰色濁感 */
-        @keyframes lowSaturatePulse {
-          0%, 100% { opacity: 0.12; filter: blur(50px); }
-          50% { opacity: 0.25; filter: blur(70px); }
-        }
-        .custom-scrollbar::-webkit-scrollbar { width: 3px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.05); }
+        @keyframes visionFocus { 0% { filter: blur(15px); opacity: 0; } 100% { filter: blur(0px); opacity: 1; } }
+        @keyframes subtleFloat { 0%, 100% { opacity: 0.12; } 50% { opacity: 0.22; } }
       `}} />
 
-      {/* 結果頁面：修正背景暈染的色彩質感 */}
-      {step === 'result' && (
-        <div className="w-full flex flex-col items-center justify-center min-h-[80vh] py-10">
-          <div ref={resultRef} data-result-card="true" className={`w-full max-w-[420px] bg-[#FDFDFD] p-12 relative overflow-hidden flex flex-col items-center ${isCapturing ? '!filter-none !opacity-100' : ''}`} style={{ animation: isCapturing ? 'none' : 'visionFocus 3s forwards' }}>
-            
-            {/* 氛圍漸層 - 已優化為乾淨、淡色 */}
-            <div data-gradient-overlay="true" className="absolute inset-0 z-0 pointer-events-none transition-opacity duration-1000" style={{ background: `radial-gradient(circle at center, ${res.hex} 0%, transparent 80%)`, opacity: isCapturing ? 0.2 : 0.12 }} >
-                {!isCapturing && (
-                  <div className="absolute inset-0 animate-[lowSaturatePulse_8s_infinite]" style={{ background: `radial-gradient(circle at center, ${res.hex} 0%, transparent 70%)` }} />
-                )}
-            </div>
-            
-            <div className="relative z-10 w-full text-center flex flex-col items-center">
-              <div className="flex justify-between w-full text-[7px] tracking-[0.4em] opacity-30 mb-20 uppercase"><span>PANTONE® {res.pantone}</span><span>{res.tag}</span></div>
-              <p className="text-[10px] tracking-[0.4em] text-black/30 mb-2 uppercase">{res.brand}</p>
-              <h1 className="text-3xl font-light mb-12 tracking-[0.1em] uppercase leading-tight">{res.title}</h1>
-              <p className="text-[11px] text-black/50 italic mb-20 leading-relaxed px-4">{res.description}</p>
-              
-              {/* Note Structure */}
-              <div className="w-full flex flex-col items-center">
-                <div className="w-full h-[0.5px] bg-black/5 mb-16" />
-                <div className="grid grid-cols-1 gap-16 py-10 mb-16">
-                   {Object.entries(res.notes).map(([key, note]: any) => (
-                     <div key={key} className="flex flex-col items-center uppercase">
-                       <span className="text-[6px] tracking-[0.8em] text-black/10 mb-1">{key} NOTE</span>
-                       <span className="text-[11px] tracking-[0.2em] text-black/70 px-4">{note}</span>
-                     </div>
-                   ))}
-                </div>
-                <div className="w-full h-[0.5px] bg-black/5 mb-20" />
-              </div>
+      {step === 'login' && (
+        <button onClick={() => setStep('quiz')} className="px-12 py-4 border border-black/10 tracking-[0.5em] text-[12px] uppercase hover:bg-black hover:text-white transition-all">START DISCOVERY</button>
+      )}
 
-              {/* ACTION BUTTONS */}
-              <div className="flex justify-center gap-16 mt-4">
-                <button onClick={saveResultCard} className="flex flex-col items-center gap-2 opacity-20 hover:opacity-100 transition-all uppercase text-[7px] tracking-widest">
-                  <Download size={18} strokeWidth={1} />SAVE MATCH
+      {step === 'quiz' && (
+        <div className={`text-center px-6 transition-all duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
+          <p className="text-2xl font-light mb-20 leading-relaxed">「 {questions[qIndex].q} 」</p>
+          <div className="flex flex-col gap-8">
+            {questions[qIndex].options.map((opt, i) => (
+              <button key={i} onClick={() => handleNextQuiz(opt.v)} className="text-[12px] tracking-[0.4em] opacity-40 hover:opacity-100 transition-opacity uppercase">{opt.t}</button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {step === 'result' && (
+        <div className="w-full flex flex-col items-center">
+          <div ref={resultRef} data-result-card="true" className={`w-[380px] bg-[#FDFDFD] p-12 relative flex flex-col items-center border border-black/[0.03] ${isCapturing ? '!filter-none !opacity-100' : 'animate-[visionFocus_2s_forwards]'}`}>
+            
+            {/* 背景氛圍層：確保顏色乾淨、通透 */}
+            <div data-gradient-overlay="true" className="absolute inset-0 z-0 pointer-events-none" 
+                 style={{ 
+                   background: `radial-gradient(circle at center, ${res.hex} 0%, transparent 80%)`, 
+                   opacity: isCapturing ? 0.15 : 0.1,
+                   animation: isCapturing ? 'none' : 'subtleFloat 6s infinite ease-in-out'
+                 }} 
+            />
+            
+            <div className="relative z-10 w-full text-center">
+              <div className="flex justify-between w-full text-[7px] tracking-[0.4em] opacity-20 mb-16 uppercase">
+                <span>PANTONE® {res.pantone}</span><span>{res.tag}</span>
+              </div>
+              <p className="text-[9px] tracking-[0.5em] text-black/30 mb-2 uppercase">{res.brand}</p>
+              <h1 className="text-2xl font-light mb-10 tracking-[0.15em] uppercase">{res.title}</h1>
+              <p className="text-[11px] text-black/40 italic mb-16 leading-relaxed px-2">{res.description}</p>
+              
+              <div className="w-full h-[0.5px] bg-black/[0.05] mb-12" />
+              <div className="space-y-10 mb-12">
+                {Object.entries(res.notes).map(([k, v]: any) => (
+                  <div key={k} className="flex flex-col">
+                    <span className="text-[6px] tracking-[0.6em] text-black/10 mb-1 uppercase">{k} NOTE</span>
+                    <span className="text-[11px] tracking-[0.1em] text-black/60">{v}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="w-full h-[0.5px] bg-black/[0.05] mb-16" />
+
+              <div className="flex justify-center gap-12">
+                <button onClick={saveResultCard} className="flex flex-col items-center gap-2 opacity-20 hover:opacity-100 transition-all text-[7px] tracking-widest uppercase">
+                  <Download size={16} strokeWidth={1} />SAVE MATCH
                 </button>
-                <button onClick={() => window.location.reload()} className="flex flex-col items-center gap-2 opacity-20 hover:opacity-100 transition-all uppercase text-[7px] tracking-widest">
-                  <RotateCcw size={18} strokeWidth={1} />RETRY
+                <button onClick={() => window.location.reload()} className="flex flex-col items-center gap-2 opacity-20 hover:opacity-100 transition-all text-[7px] tracking-widest uppercase">
+                  <RotateCcw size={16} strokeWidth={1} />RETRY
                 </button>
               </div>
             </div>
