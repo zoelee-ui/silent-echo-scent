@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Download, RotateCcw, Menu, X, Compass, Flower2, User, ChevronRight, ArrowLeft, Layers, Microscope } from 'lucide-react';
 
-// 1. 完整 6 款市售香水資料庫
+// 1. 完整 6 款市售香水資料庫 - 文案全面繁體化與調香語感優化
 const PERFUME_MATCHES: { [key: string]: any } = {
   CALM: { 
     brand: "LE LABO", title: "Santal 33", 
@@ -291,7 +291,7 @@ export default function Home() {
 
       {showBlindLight && <div className="fixed inset-0 bg-white z-[120] animate-[blindLight_1s_ease-out_forwards]" />}
 
-      {/* 首頁入口 */}
+      {/* 🟢 首頁入口 - 已依照要求改為英文大寫 */}
       {step === 'login' && (
         <div className={`w-full flex flex-col items-center justify-center gap-20 ${fadeClass}`}>
           <div className="flex flex-col items-center">
@@ -311,10 +311,10 @@ export default function Home() {
         </div>
       )}
 
-      {/* Quiz - 已更新 "OPTION 0X" 標題 */}
+      {/* Quiz */}
       {step === 'quiz' && (
         <div className={`max-w-xl w-full text-center ${fadeClass}`}>
-          <p className="text-[8px] tracking-[1em] text-black/20 uppercase mb-24">OPTION 0{qIndex + 1}</p>
+          <p className="text-[8px] tracking-[1em] text-black/20 uppercase mb-24">問題 0{qIndex + 1}</p>
           <p className="text-2xl mb-24 text-black/80 font-light px-6">「 {questions[qIndex].q} 」</p>
           <div className="flex flex-col gap-10">
             {questions[qIndex].options.map((opt, i) => (
