@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Download, RotateCcw, Menu, X, Compass, Flower2, User, ChevronRight, ArrowLeft, Layers, Microscope } from 'lucide-react';
 
-// 1. 完整 6 款市售香水資料庫 - 文案全面繁體化與調香語感優化
+// 1. 完整 6 款市售香水資料庫
 const PERFUME_MATCHES: { [key: string]: any } = {
   CALM: { 
     brand: "LE LABO", title: "Santal 33", 
@@ -213,7 +213,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* BRAND STORY 彈窗 - 文案繁體化優化 */}
+      {/* BRAND STORY 彈窗 */}
       <div className={`fixed inset-0 z-[120] flex items-center justify-center p-8 transition-all duration-1000 ease-in-out ${storyOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
         <div className="absolute inset-0 bg-white/40 backdrop-blur-3xl" onClick={() => setStoryOpen(false)} />
         <div className="relative max-w-xl w-full bg-[#FDFDFD] p-12 lg:p-20 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.03)] border border-black/[0.02] overflow-y-auto max-h-[80vh]">
@@ -291,12 +291,12 @@ export default function Home() {
 
       {showBlindLight && <div className="fixed inset-0 bg-white z-[120] animate-[blindLight_1s_ease-out_forwards]" />}
 
-      {/* Login 介面 - 已移除圓圈並將文案橫向對齊 */}
+      {/* 首頁入口 */}
       {step === 'login' && (
         <div className={`w-full flex flex-col items-center justify-center gap-20 ${fadeClass}`}>
           <div className="flex flex-col items-center">
              <span className="text-[10px] tracking-[1.5em] pl-[1.5em] text-black/40 uppercase font-light">
-                尋找你的氣味
+                FIND YOUR OWN SCENT
              </span>
           </div>
           <button 
@@ -304,17 +304,17 @@ export default function Home() {
             className="group relative px-14 py-4 overflow-hidden border border-black/10 hover:border-black transition-colors duration-500 uppercase"
           >
             <span className="relative z-10 text-[10px] tracking-[0.6em] group-hover:text-white transition-colors duration-500 pl-[0.6em]">
-                進入路徑
+                START
             </span>
             <div className="absolute inset-0 bg-black translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out"></div>
           </button>
         </div>
       )}
 
-      {/* Quiz */}
+      {/* Quiz - 已更新 "OPTION 0X" 標題 */}
       {step === 'quiz' && (
         <div className={`max-w-xl w-full text-center ${fadeClass}`}>
-          <p className="text-[8px] tracking-[1em] text-black/20 uppercase mb-24">問題 0{qIndex + 1}</p>
+          <p className="text-[8px] tracking-[1em] text-black/20 uppercase mb-24">OPTION 0{qIndex + 1}</p>
           <p className="text-2xl mb-24 text-black/80 font-light px-6">「 {questions[qIndex].q} 」</p>
           <div className="flex flex-col gap-10">
             {questions[qIndex].options.map((opt, i) => (
@@ -342,7 +342,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* Result - 文案已參考圖片更新 */}
+      {/* Result */}
       {step === 'result' && (
         <div ref={resultRef} className={`w-full max-w-[420px] bg-[#FDFDFD] text-black p-16 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.05)] border border-black/[0.02] relative overflow-hidden ${isCapturing ? '!filter-none !opacity-100' : ''}`} style={{ animation: isCapturing ? 'none' : 'visionFocus 3s forwards' }}>
           <div className="absolute inset-0 opacity-100 pointer-events-none">
