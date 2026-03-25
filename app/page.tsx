@@ -227,7 +227,7 @@ export default function Home() {
               <section>
                 <p className="text-[8px] tracking-[0.5em] opacity-20 mb-4 uppercase pl-[0.5em]">Mission</p>
                 <p className="text-[13px] leading-[2.4] font-light opacity-60 tracking-[0.15em]">
-                  在这个資訊過載的時代，氣味不應成為另一種選擇壓力。Silent Echo 致力於消除挑選香水時的焦慮，我們不談論成分，只談論你的頻率。
+                  在這個資訊過載的時代，氣味不應成為另一種選擇壓力。Silent Echo 致力於消除挑選香水時的焦慮，我們不談論成分，只談論你的頻率。
                 </p>
               </section>
               <section>
@@ -291,24 +291,31 @@ export default function Home() {
 
       {showBlindLight && <div className="fixed inset-0 bg-white z-[120] animate-[blindLight_1s_ease-out_forwards]" />}
 
-      {/* 🟢 更新後的 Login 介面：取消圖形，文案改為一行 */}
+      {/* 🟢 徹底修正後的 Login 介面：完全移除圓圈容器，文案水平一行 */}
       {step === 'login' && (
-        <div className={`max-w-md w-full text-center ${fadeClass}`}>
-          <div className="h-40 flex items-center justify-center mb-16">
-             <span className="text-[9px] tracking-[1.4em] pl-[1.4em] text-black/40 uppercase font-light">Find Your Scent</span>
+        <div className={`w-full flex flex-col items-center justify-center gap-20 ${fadeClass}`}>
+          <div className="flex flex-col items-center">
+             <span className="text-[10px] tracking-[1.5em] pl-[1.5em] text-black/40 uppercase font-light">
+                Find Your Scent
+             </span>
           </div>
-          <button onClick={() => { setIsVisible(false); setTimeout(() => { setStep('quiz'); setIsVisible(true); }, 900); }} className="group relative px-12 py-3 overflow-hidden border border-black/10 hover:border-black transition-colors duration-500 uppercase">
-            <span className="relative z-10 text-[10px] tracking-[0.6em] group-hover:text-white transition-colors duration-500 pl-[0.6em]">ENTER PATH</span>
+          <button 
+            onClick={() => { setIsVisible(false); setTimeout(() => { setStep('quiz'); setIsVisible(true); }, 900); }} 
+            className="group relative px-14 py-4 overflow-hidden border border-black/10 hover:border-black transition-colors duration-500 uppercase"
+          >
+            <span className="relative z-10 text-[10px] tracking-[0.6em] group-hover:text-white transition-colors duration-500 pl-[0.6em]">
+                ENTER PATH
+            </span>
             <div className="absolute inset-0 bg-black translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out"></div>
           </button>
         </div>
       )}
 
-      {/* 其他 Step (Quiz, Particle, Result) 保持不變... */}
+      {/* Step: Quiz */}
       {step === 'quiz' && (
         <div className={`max-w-xl w-full text-center ${fadeClass}`}>
           <p className="text-[8px] tracking-[1em] text-black/20 uppercase mb-24">QUESTION 0{qIndex + 1}</p>
-          <p className="text-2xl mb-24 text-black/80 font-light px-6 px-6">「 {questions[qIndex].q} 」</p>
+          <p className="text-2xl mb-24 text-black/80 font-light px-6">「 {questions[qIndex].q} 」</p>
           <div className="flex flex-col gap-10">
             {questions[qIndex].options.map((opt, i) => (
               <button key={i} onClick={() => handleNextQuiz(opt.v)} className="group text-[11px] tracking-[0.4em] text-black/40 hover:text-black transition-all duration-500 flex flex-col items-center uppercase">
@@ -320,6 +327,7 @@ export default function Home() {
         </div>
       )}
 
+      {/* Step: Particle */}
       {step === 'particle' && (
         <div className={`fixed inset-0 flex items-center justify-center transition-opacity duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
           <div className="absolute z-20 text-[10px] tracking-[1.2em] text-black/20 uppercase" style={{ opacity: Math.max(0, 1 - progress / 50) }}>於虛無中畫圓</div>
@@ -334,6 +342,7 @@ export default function Home() {
         </div>
       )}
 
+      {/* Step: Result */}
       {step === 'result' && (
         <div ref={resultRef} className={`w-full max-w-[420px] bg-[#FDFDFD] text-black p-16 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.05)] border border-black/[0.02] relative overflow-hidden ${isCapturing ? '!filter-none !opacity-100' : ''}`} style={{ animation: isCapturing ? 'none' : 'visionFocus 3s forwards' }}>
           <div className="absolute inset-0 opacity-100 pointer-events-none">
